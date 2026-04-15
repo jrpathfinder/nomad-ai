@@ -50,7 +50,7 @@ struct ItemRowView: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundStyle(.tertiaryLabel)
+                .foregroundStyle(.tertiary)
         }
         .padding(.vertical, 4)
     }
