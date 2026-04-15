@@ -30,18 +30,37 @@ struct ItemConfirmView: View {
                         .frame(maxWidth: .infinity, maxHeight: 280)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
 
-                    // AI confidence badge
-                    if let id = identified, id.confidence > 0 {
-                        HStack {
-                            Image(systemName: "sparkles")
-                            Text("AI identified with \(Int(id.confidence * 100))% confidence")
-                                .font(.caption)
+                    // AI result badge
+                    if let id = identified {
+                        if id.confidence > 0 {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                Text("AI identified with \(Int(id.confidence * 100))% confidence")
+                                    .font(.caption)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.blue.opacity(0.1))
+                            .foregroundStyle(.blue)
+                            .clipShape(Capsule())
+                        } else {
+                            // Show why AI failed
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(.orange)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("AI recognition failed")
+                                        .font(.caption).bold()
+                                    Text(id.description.isEmpty ? "Check Settings → enter your API key" : id.description)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .padding(12)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.orange.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.blue.opacity(0.1))
-                        .foregroundStyle(.blue)
-                        .clipShape(Capsule())
                     }
 
                     // Editable fields

@@ -11,6 +11,8 @@ struct ScanView: View {
     @State private var identified: IdentifiedItem? = nil
     @State private var showConfirm = false
     @State private var flashOn = false
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
 
     enum ScanPhase {
         case idle, analysing, confirmed, error
@@ -66,6 +68,11 @@ struct ScanView: View {
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Please allow camera access in Settings to scan items.")
+            }
+            .alert("AI Error", isPresented: $showErrorAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(errorMessage)
             }
         }
     }
@@ -164,7 +171,6 @@ struct ScanView: View {
         camera.capturePhoto()
         phase = .analysing
 
-        // Wait for the photo to land then send to AI
         Task {
             // Poll briefly for the captured image (max ~3s)
             for _ in 0..<30 {
@@ -173,12 +179,22 @@ struct ScanView: View {
             }
 
             guard let image = camera.capturedImage else {
-                await MainActor.run { phase = .error }
+                await MainActor.run {
+                    phase = .error
+                    errorMessage = "Could not capture photo. Try again."
+                    showErrorAlert = true
+                }
                 return
             }
 
             let result = await ai.identify(image: image)
+
             await MainActor.run {
+                // Show AI error as alert if something went wrong
+                if let err = ai.lastError, !err.isEmpty {
+                    errorMessage = err
+                    showErrorAlert = true
+                }
                 identified = result
                 phase = .confirmed
                 showConfirm = true
