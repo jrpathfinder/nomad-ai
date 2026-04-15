@@ -39,4 +39,20 @@ final class Item {
         get { ItemCategory(rawValue: categoryRaw) ?? .other }
         set { categoryRaw = newValue.rawValue; updatedAt = Date() }
     }
+
+    // QR code payload — encodes item identity for quick lookup
+    var qrPayload: String {
+        var payload: [String: String] = [
+            "type": "item",
+            "id": id.uuidString,
+            "name": name,
+            "category": category.rawValue
+        ]
+        if let box = box { payload["box"] = box.name }
+        if let data = try? JSONSerialization.data(withJSONObject: payload),
+           let string = String(data: data, encoding: .utf8) {
+            return string
+        }
+        return "nomad://item/\(id.uuidString)"
+    }
 }

@@ -14,6 +14,8 @@ struct ItemDetailView: View {
     @State private var editCategory: ItemCategory = .other
     @State private var editTags = ""
     @State private var selectedBox: MovingBox? = nil
+    @State private var showShareSheet = false
+    @State private var shareImage: UIImage? = nil
 
     var body: some View {
         NavigationStack {
@@ -23,6 +25,7 @@ struct ItemDetailView: View {
                     infoSection
                     boxSection
                     tagsSection
+                    if !isEditing { qrSection }
                     metaSection
                 }
                 .padding()
@@ -155,6 +158,88 @@ struct ItemDetailView: View {
         .padding()
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var qrSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("QR Code").font(.headline)
+
+            HStack(spacing: 16) {
+                // QR preview
+                if let qr = QRCodeService.generate(from: item.qrPayload, size: 120) {
+                    Image(uiImage: qr)
+                        .resizable()
+                        .interpolation(.none)
+                        .scaledToFit()
+                        .frame(width: 90, height: 90)
+                        .padding(10)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .shadow(color: .black.opacity(0.08), radius: 6)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Scan to identify this item")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    Button {
+                        shareImage = buildShareImage()
+                        showShareSheet = true
+                    } label: {
+                        Label("Share QR", systemImage: "square.and.arrow.up")
+                            .font(.subheadline)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(item.category.color.opacity(0.12))
+                            .foregroundStyle(item.category.color)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.systemGray6))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .sheet(isPresented: $showShareSheet) {
+            if let img = shareImage {
+                ShareSheet(items: [img])
+            }
+        }
+    }
+
+    private func buildShareImage() -> UIImage? {
+        let qrSize: CGFloat = 300
+        guard let qr = QRCodeService.generate(from: item.qrPayload, size: qrSize) else { return nil }
+
+        let labelH: CGFloat = 80
+        let totalH = qrSize + labelH + 40
+        let width = qrSize + 40
+
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: width, height: totalH))
+        return renderer.image { _ in
+            UIColor.white.setFill()
+            UIRectFill(CGRect(x: 0, y: 0, width: width, height: totalH))
+
+            qr.draw(in: CGRect(x: 20, y: 20, width: qrSize, height: qrSize))
+
+            let nameAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.boldSystemFont(ofSize: 20),
+                .foregroundColor: UIColor.black
+            ]
+            let nameStr = NSAttributedString(string: item.name, attributes: nameAttrs)
+            let nameSize = nameStr.size()
+            nameStr.draw(at: CGPoint(x: (width - nameSize.width) / 2, y: qrSize + 28))
+
+            let catAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 15),
+                .foregroundColor: UIColor.darkGray
+            ]
+            let catStr = NSAttributedString(string: item.category.rawValue, attributes: catAttrs)
+            let catSize = catStr.size()
+            catStr.draw(at: CGPoint(x: (width - catSize.width) / 2, y: qrSize + 54))
+        }
     }
 
     private var metaSection: some View {
