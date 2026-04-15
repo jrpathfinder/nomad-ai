@@ -124,16 +124,27 @@ final class AIService: ObservableObject {
     private func parseResponse(data: Data) throws -> IdentifiedItem? {
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let content = (json["content"] as? [[String: Any]])?.first,
-              let text = content["text"] as? String,
-              let textData = text.data(using: .utf8),
+              let text = content["text"] as? String
+        else { return nil }
+
+        // Strip markdown code fences Claude sometimes wraps JSON in
+        var cleaned = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if cleaned.hasPrefix("```") {
+            cleaned = cleaned
+                .replacingOccurrences(of: "```json", with: "")
+                .replacingOccurrences(of: "```", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        guard let textData = cleaned.data(using: .utf8),
               let parsed = try JSONSerialization.jsonObject(with: textData) as? [String: Any]
         else { return nil }
 
-        let name = parsed["name"] as? String ?? "Unknown Item"
+        let name        = parsed["name"]        as? String ?? "Unknown Item"
         let description = parsed["description"] as? String ?? ""
-        let categoryStr = parsed["category"] as? String ?? "Other"
-        let tags = parsed["tags"] as? [String] ?? []
-        let confidence = parsed["confidence"] as? Double ?? 0.8
+        let categoryStr = parsed["category"]    as? String ?? "Other"
+        let tags        = parsed["tags"]        as? [String] ?? []
+        let confidence  = parsed["confidence"]  as? Double ?? 0.8
 
         return IdentifiedItem(
             name: name,
