@@ -1,49 +1,40 @@
 #!/bin/bash
-# Syncs the git repo source files into the Xcode project folder.
-# Run this from Terminal after every git pull:
-#   bash sync_to_xcode.sh
+# Run in Terminal:
+#   bash "/Users/ir-home/Projects/2026/nomad-ai/nomad-inventory/Nomad Inventory/ios/sync_to_xcode.sh"
 
-REPO="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SRC="$REPO/NomadInventory"
+SRC="/Users/ir-home/Projects/2026/nomad-ai/nomad-inventory/Nomad Inventory/ios/NomadInventory"
+DEST="/Users/ir-home/Projects/2026/nomad-ai/nomad-inventory/Nomad Inventory/Nomad Inventory/Nomad Inventory"
 
-# ── Find the Xcode project folder automatically ──────────────────────────────
-XCODE_ROOT=$(find "$HOME/Projects" -name "*.xcodeproj" -maxdepth 6 2>/dev/null | grep -i "nomad" | head -1 | xargs dirname)
-
-if [ -z "$XCODE_ROOT" ]; then
-    echo "❌ Could not find Nomad Inventory.xcodeproj under ~/Projects"
-    echo "   Set DEST manually at the top of this script."
-    exit 1
-fi
-
-# Xcode copies files into a subfolder matching the project name
-DEST="$XCODE_ROOT/Nomad Inventory"
-
-echo "📂 Source : $SRC"
-echo "📂 Dest   : $DEST"
+echo "SRC:  $SRC"
+echo "DEST: $DEST"
 echo ""
 
 if [ ! -d "$DEST" ]; then
-    echo "❌ Destination folder not found: $DEST"
+    echo "❌ DEST not found. Run this to find the right path:"
+    echo "   find \"/Users/ir-home/Projects\" -name \"NomadInventoryApp.swift\" 2>/dev/null"
     exit 1
 fi
 
-# ── Copy all Swift source folders ────────────────────────────────────────────
-copy_folder() {
-    local folder=$1
-    if [ -d "$SRC/$folder" ]; then
-        cp -Rv "$SRC/$folder/"* "$DEST/$folder/" 2>/dev/null && \
-            echo "✅ Synced $folder" || \
-            echo "⚠️  $folder — destination missing (create it in Xcode first)"
-    fi
-}
-
-copy_folder "App"
-copy_folder "Models"
-copy_folder "Services"
-copy_folder "Views/Inventory"
-copy_folder "Views/Boxes"
-copy_folder "Views/Scan"
-copy_folder "Views/Shared"
+cp -v "$SRC/App/NomadInventoryApp.swift"     "$DEST/App/"
+cp -v "$SRC/App/ContentView.swift"           "$DEST/App/"
+cp -v "$SRC/Models/Item.swift"               "$DEST/Models/"
+cp -v "$SRC/Models/MovingBox.swift"          "$DEST/Models/"
+cp -v "$SRC/Models/ItemCategory.swift"       "$DEST/Models/"
+cp -v "$SRC/Services/AIService.swift"        "$DEST/Services/"
+cp -v "$SRC/Services/CameraService.swift"    "$DEST/Services/"
+cp -v "$SRC/Services/QRCodeService.swift"    "$DEST/Services/"
+cp -v "$SRC/Services/LocalizationManager.swift" "$DEST/Services/"
+cp -v "$SRC/Views/Inventory/InventoryView.swift"   "$DEST/Views/Inventory/"
+cp -v "$SRC/Views/Inventory/ItemRowView.swift"      "$DEST/Views/Inventory/"
+cp -v "$SRC/Views/Inventory/ItemDetailView.swift"   "$DEST/Views/Inventory/"
+cp -v "$SRC/Views/Boxes/BoxesView.swift"     "$DEST/Views/Boxes/"
+cp -v "$SRC/Views/Boxes/BoxDetailView.swift" "$DEST/Views/Boxes/"
+cp -v "$SRC/Views/Boxes/QRCodeView.swift"    "$DEST/Views/Boxes/"
+cp -v "$SRC/Views/Scan/ScanView.swift"       "$DEST/Views/Scan/"
+cp -v "$SRC/Views/Scan/CameraPreview.swift"  "$DEST/Views/Scan/"
+cp -v "$SRC/Views/Scan/ItemConfirmView.swift" "$DEST/Views/Scan/"
+cp -v "$SRC/Views/Shared/AddItemView.swift"  "$DEST/Views/Shared/"
+cp -v "$SRC/Views/Shared/SettingsView.swift" "$DEST/Views/Shared/"
 
 echo ""
-echo "✅ Done — press Cmd+R in Xcode to rebuild."
+echo "✅ Done — press Cmd+R in Xcode"
