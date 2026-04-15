@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.dismiss) private var dismiss
     @AppStorage("anthropic_api_key") private var apiKey = ""
     @State private var draftKey = ""
     @State private var showKey = false
@@ -99,12 +98,6 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
             .onAppear {
                 draftKey = apiKey
             }
