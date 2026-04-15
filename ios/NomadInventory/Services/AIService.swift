@@ -15,10 +15,12 @@ final class AIService: ObservableObject {
     @Published var isLoading = false
     @Published var lastError: String?
 
-    // Set your Anthropic API key in the app config or environment
+    // API key — read from UserDefaults (set via SettingsView), then Info.plist fallback
     private var apiKey: String {
-        // In production: use Keychain or secure config
-        Bundle.main.infoDictionary?["ANTHROPIC_API_KEY"] as? String ?? ""
+        if let stored = UserDefaults.standard.string(forKey: "anthropic_api_key"), !stored.isEmpty {
+            return stored
+        }
+        return Bundle.main.infoDictionary?["ANTHROPIC_API_KEY"] as? String ?? ""
     }
 
     private let endpoint = "https://api.anthropic.com/v1/messages"
