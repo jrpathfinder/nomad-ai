@@ -3,6 +3,7 @@ import AVFoundation
 
 struct ScanView: View {
     var onItemSaved: (() -> Void)? = nil
+    var onClose: (() -> Void)? = nil
 
     @StateObject private var camera = CameraService()
     @StateObject private var ai = AIService()
@@ -42,6 +43,18 @@ struct ScanView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbarBackground(.black.opacity(0.6), for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        camera.stopSession()
+                        onClose?()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                    }
+                }
+            }
             .task {
                 await camera.requestAccess()
             }

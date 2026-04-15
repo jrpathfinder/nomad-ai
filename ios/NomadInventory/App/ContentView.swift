@@ -17,7 +17,7 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            ScanView(onItemSaved: { selectedTab = 0 })
+            ScanView(onItemSaved: { selectedTab = 0 }, onClose: { selectedTab = 0 })
                 .tabItem {
                     Label("Scan", systemImage: "camera.viewfinder")
                 }
