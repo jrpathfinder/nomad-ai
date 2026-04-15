@@ -5,6 +5,7 @@ struct ScanView: View {
     var onItemSaved: (() -> Void)? = nil
     var onClose: (() -> Void)? = nil
 
+    @EnvironmentObject private var lang: LocalizationManager
     @StateObject private var camera = CameraService()
     @StateObject private var ai = AIService()
 
@@ -39,7 +40,7 @@ struct ScanView: View {
                     bottomBar
                 }
             }
-            .navigationTitle("Scan Item")
+            .navigationTitle(lang.s(.scanTitle))
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbarBackground(.black.opacity(0.6), for: .navigationBar)
@@ -123,7 +124,7 @@ struct ScanView: View {
                         ProgressView()
                             .tint(.white)
                             .scaleEffect(1.4)
-                        Text("Identifying…")
+                        Text(lang.s(.identifying))
                             .font(.headline)
                             .foregroundStyle(.white)
                     }

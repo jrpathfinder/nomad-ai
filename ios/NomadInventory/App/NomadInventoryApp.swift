@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct NomadInventoryApp: App {
     let container: ModelContainer
+    @StateObject private var lang = LocalizationManager()
 
     init() {
         do {
@@ -16,6 +17,7 @@ struct NomadInventoryApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(lang)
         }
         .modelContainer(container)
     }

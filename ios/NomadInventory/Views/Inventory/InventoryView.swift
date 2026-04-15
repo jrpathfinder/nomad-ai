@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct InventoryView: View {
+    @EnvironmentObject private var lang: LocalizationManager
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Item.createdAt, order: .reverse) private var items: [Item]
 
@@ -30,8 +31,8 @@ struct InventoryView: View {
                     itemList
                 }
             }
-            .navigationTitle("Inventory")
-            .searchable(text: $searchText, prompt: "Search items…")
+            .navigationTitle(lang.s(.inventoryTitle))
+            .searchable(text: $searchText, prompt: lang.s(.searchPlaceholder))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showAddItem = true } label: {
@@ -55,9 +56,9 @@ struct InventoryView: View {
             Image(systemName: "archivebox")
                 .font(.system(size: 64))
                 .foregroundStyle(.secondary)
-            Text("No items yet")
+            Text(lang.s(.inventoryEmpty))
                 .font(.title2).bold()
-            Text("Tap the camera tab to scan and add items,\nor tap + to add manually.")
+            Text(lang.s(.inventoryEmptySub))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
         }
@@ -83,7 +84,7 @@ struct InventoryView: View {
     private var categoryFilter: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                FilterChip(label: "All", icon: "square.grid.2x2", isSelected: selectedCategory == nil) {
+                FilterChip(label: lang.s(.filterAll), icon: "square.grid.2x2", isSelected: selectedCategory == nil) {
                     selectedCategory = nil
                 }
                 ForEach(ItemCategory.allCases) { cat in

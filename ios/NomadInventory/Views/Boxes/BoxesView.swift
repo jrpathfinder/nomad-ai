@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct BoxesView: View {
+    @EnvironmentObject private var lang: LocalizationManager
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \MovingBox.createdAt, order: .reverse) private var boxes: [MovingBox]
 
@@ -17,7 +18,7 @@ struct BoxesView: View {
                     boxGrid
                 }
             }
-            .navigationTitle("Boxes")
+            .navigationTitle(lang.s(.boxesTitle))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showAddBox = true } label: {
@@ -39,12 +40,12 @@ struct BoxesView: View {
             Image(systemName: "shippingbox")
                 .font(.system(size: 64))
                 .foregroundStyle(.secondary)
-            Text("No boxes yet")
+            Text(lang.s(.boxesEmpty))
                 .font(.title2).bold()
-            Text("Create boxes to organise your items\nand generate QR code labels.")
+            Text(lang.s(.boxesEmptySub))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            Button("Create first box") { showAddBox = true }
+            Button(lang.s(.createFirstBox)) { showAddBox = true }
                 .buttonStyle(.borderedProminent)
         }
         .padding()
