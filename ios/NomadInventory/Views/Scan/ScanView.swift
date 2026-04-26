@@ -72,6 +72,11 @@ struct ScanView: View {
                     )
                 }
             }
+            // React as soon as the camera delivers the photo
+            .onChange(of: camera.capturedImage) { _, newImage in
+                guard let image = newImage, phase == .analysing else { return }
+                Task { await runIdentification(image: image) }
+            }
             .alert("Camera Access Required",
                    isPresented: .constant(camera.authorizationStatus == .denied)) {
                 Button("Open Settings") {
@@ -182,38 +187,21 @@ struct ScanView: View {
     // MARK: - Capture flow
 
     private func captureAndAnalyse() {
-        camera.capturePhoto()
         phase = .analysing
+        camera.capturedImage = nil   // clear any previous capture
+        camera.capturePhoto()
+        // Actual identification triggered by .onChange(of: camera.capturedImage)
+    }
 
-        Task {
-            // Poll briefly for the captured image (max ~3s)
-            for _ in 0..<30 {
-                if camera.capturedImage != nil { break }
-                try? await Task.sleep(nanoseconds: 100_000_000)
-            }
-
-            guard let image = camera.capturedImage else {
-                await MainActor.run {
-                    phase = .error
-                    errorMessage = "Could not capture photo. Try again."
-                    showErrorAlert = true
-                }
-                return
-            }
-
-            let result = await ai.identify(image: image)
-
-            await MainActor.run {
-                // Show AI error as alert if something went wrong
-                if let err = ai.lastError, !err.isEmpty {
-                    errorMessage = err
-                    showErrorAlert = true
-                }
-                identified = result
-                phase = .confirmed
-                showConfirm = true
-            }
+    private func runIdentification(image: UIImage) async {
+        let result = await ai.identify(image: image)
+        if let err = ai.lastError, !err.isEmpty {
+            errorMessage = err
+            showErrorAlert = true
         }
+        identified = result
+        phase = .confirmed
+        showConfirm = true
     }
 }
 
