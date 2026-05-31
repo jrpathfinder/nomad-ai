@@ -33,9 +33,10 @@ final class AIService: ObservableObject {
         defer { Task { await self.setLoading(false) } }
 
         // ── Encode image on a background thread ──────────────────────────────
-        guard let base64 = await Task.detached(priority: .userInitiated) {
+        let base64Opt = await Task.detached(priority: .userInitiated) {
             Self.encodeImage(image)
-        }.value else {
+        }.value
+        guard let base64 = base64Opt else {
             await setError("Failed to encode image.")
             return fallback()
         }
