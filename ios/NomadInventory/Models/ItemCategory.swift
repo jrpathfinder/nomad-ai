@@ -28,12 +28,12 @@ enum ItemCategory: String, CaseIterable, Codable, Identifiable {
         case .books: return "books.vertical"
         case .documents: return "doc.text"
         case .tools: return "wrench.and.screwdriver"
-        case .toys: return "gamecontroller"
-        case .sports: return "sportscourt"
+        case .toys: return "teddybear"
+        case .sports: return "figure.run"
         case .bathroom: return "shower"
         case .bedroom: return "bed.double"
         case .decoration: return "photo.artframe"
-        case .food: return "cart"
+        case .food: return "carrot"
         case .other: return "archivebox"
         }
     }

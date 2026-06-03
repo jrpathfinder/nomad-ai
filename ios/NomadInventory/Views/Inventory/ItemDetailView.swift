@@ -81,12 +81,7 @@ struct ItemDetailView: View {
                     .textFieldStyle(.roundedBorder)
                     .lineLimit(3...6)
 
-                Picker("Category", selection: $editCategory) {
-                    ForEach(ItemCategory.allCases) { cat in
-                        Label(cat.rawValue, systemImage: cat.icon).tag(cat)
-                    }
-                }
-                .pickerStyle(.menu)
+                CategoryPickerView(selection: $editCategory)
             } else {
                 Text(item.name).font(.title2).bold()
                 if !item.itemDescription.isEmpty {

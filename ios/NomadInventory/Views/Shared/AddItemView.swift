@@ -95,12 +95,8 @@ struct AddItemView: View {
 
     private var categorySection: some View {
         Section("Category") {
-            Picker("Category", selection: $category) {
-                ForEach(ItemCategory.allCases) { cat in
-                    Label(cat.rawValue, systemImage: cat.icon).tag(cat)
-                }
-            }
-            .pickerStyle(.navigationLink)
+            CategoryPickerView(selection: $category)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
         }
     }
 
