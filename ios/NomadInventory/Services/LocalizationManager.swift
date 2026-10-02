@@ -86,6 +86,15 @@ enum LocalizedKey {
     // Errors
     case errorCamera, errorCameraMsg, openSettings
 
+    // Premium
+    case premiumTitle, premiumSubtitle
+    case premiumFeatureScan, premiumFeatureAutofill, premiumFeatureFast
+    case planMonthly, planAnnual, perMonth, perYear, bestValue
+    case subscribe, restorePurchases, autoRenewNotice, termsOfUse
+    case loadingPlans, purchaseFailed
+    case premiumSection, premiumActive, premiumInactive
+    case upgradeToPremium, manageSubscription
+
     func string(for lang: AppLanguage) -> String {
         switch lang {
         case .english: return english
@@ -186,6 +195,27 @@ enum LocalizedKey {
         case .errorCamera:      return "Camera Access Required"
         case .errorCameraMsg:   return "Please allow camera access in Settings to scan items."
         case .openSettings:     return "Open Settings"
+        case .premiumTitle:     return "Nomad Premium"
+        case .premiumSubtitle:  return "Snap a photo and let AI catalog your items instantly."
+        case .premiumFeatureScan: return "AI camera scanning"
+        case .premiumFeatureAutofill: return "Auto-filled name, category and tags"
+        case .premiumFeatureFast: return "Pack and catalog in seconds"
+        case .planMonthly:      return "Monthly"
+        case .planAnnual:       return "Annual"
+        case .perMonth:         return "month"
+        case .perYear:          return "year"
+        case .bestValue:        return "BEST VALUE"
+        case .subscribe:        return "Subscribe"
+        case .restorePurchases: return "Restore Purchases"
+        case .autoRenewNotice:  return "Subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime in your Apple ID settings."
+        case .termsOfUse:       return "Terms of Use"
+        case .loadingPlans:     return "Loading plans…"
+        case .purchaseFailed:   return "Purchase Failed"
+        case .premiumSection:   return "Premium"
+        case .premiumActive:    return "Premium active"
+        case .premiumInactive:  return "Free plan"
+        case .upgradeToPremium: return "Upgrade to Premium"
+        case .manageSubscription: return "Manage Subscription"
         }
     }
 
@@ -282,6 +312,27 @@ enum LocalizedKey {
         case .errorCamera:      return "Нет доступа к камере"
         case .errorCameraMsg:   return "Разрешите доступ к камере в Настройках."
         case .openSettings:     return "Открыть настройки"
+        case .premiumTitle:     return "Nomad Premium"
+        case .premiumSubtitle:  return "Сфотографируйте предмет — ИИ сразу внесёт его в каталог."
+        case .premiumFeatureScan: return "ИИ-сканирование камерой"
+        case .premiumFeatureAutofill: return "Автозаполнение названия, категории и меток"
+        case .premiumFeatureFast: return "Упаковка и учёт за секунды"
+        case .planMonthly:      return "Месяц"
+        case .planAnnual:       return "Год"
+        case .perMonth:         return "месяц"
+        case .perYear:          return "год"
+        case .bestValue:        return "ВЫГОДНО"
+        case .subscribe:        return "Оформить подписку"
+        case .restorePurchases: return "Восстановить покупки"
+        case .autoRenewNotice:  return "Подписка продлевается автоматически, если не отменить её минимум за 24 часа до конца текущего периода. Управлять подпиской можно в настройках Apple ID."
+        case .termsOfUse:       return "Условия использования"
+        case .loadingPlans:     return "Загрузка тарифов…"
+        case .purchaseFailed:   return "Ошибка покупки"
+        case .premiumSection:   return "Премиум"
+        case .premiumActive:    return "Премиум активен"
+        case .premiumInactive:  return "Бесплатный план"
+        case .upgradeToPremium: return "Перейти на Премиум"
+        case .manageSubscription: return "Управление подпиской"
         }
     }
 }

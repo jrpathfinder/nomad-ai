@@ -5,6 +5,7 @@ import SwiftData
 struct NomadInventoryApp: App {
     let container: ModelContainer
     @StateObject private var lang = LocalizationManager()
+    @StateObject private var store = SubscriptionManager()
 
     init() {
         do {
@@ -18,6 +19,7 @@ struct NomadInventoryApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(lang)
+                .environmentObject(store)
         }
         .modelContainer(container)
     }

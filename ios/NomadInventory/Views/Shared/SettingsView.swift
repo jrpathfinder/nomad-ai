@@ -2,7 +2,9 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var lang: LocalizationManager
+    @EnvironmentObject private var store: SubscriptionManager
     @AppStorage("anthropic_api_key") private var apiKey = ""
+    @State private var showPaywall = false
     @State private var draftKey = ""
     @State private var showKey = false
     @State private var saved = false
@@ -20,6 +22,23 @@ struct SettingsView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                }
+
+                // ── Premium ──────────────────────────────────────────────────
+                Section(lang.s(.premiumSection)) {
+                    Label(store.isPremium ? lang.s(.premiumActive) : lang.s(.premiumInactive),
+                          systemImage: store.isPremium ? "checkmark.seal.fill" : "seal")
+                        .foregroundStyle(store.isPremium ? .green : .secondary)
+
+                    if store.isPremium {
+                        Link(lang.s(.manageSubscription),
+                             destination: URL(string: "https://apps.apple.com/account/subscriptions")!)
+                    } else {
+                        Button(lang.s(.upgradeToPremium)) { showPaywall = true }
+                        Button(lang.s(.restorePurchases)) {
+                            Task { await store.restore() }
+                        }
+                    }
                 }
 
                 // ── API Key ───────────────────────────────────────────────────
@@ -104,6 +123,7 @@ struct SettingsView: View {
             }
             .navigationTitle(lang.s(.settingsTitle))
             .onAppear { draftKey = apiKey }
+            .sheet(isPresented: $showPaywall) { PaywallView() }
         }
     }
 

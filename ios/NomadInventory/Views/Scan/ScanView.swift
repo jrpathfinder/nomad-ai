@@ -6,6 +6,7 @@ struct ScanView: View {
     var onClose: (() -> Void)? = nil
 
     @EnvironmentObject private var lang: LocalizationManager
+    @EnvironmentObject private var store: SubscriptionManager
     @StateObject private var camera = CameraService()
     @StateObject private var ai = AIService()
 
@@ -15,6 +16,7 @@ struct ScanView: View {
     @State private var flashOn = false
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    @State private var showPaywall = false
 
     enum ScanPhase {
         case idle, analysing, confirmed, error
@@ -71,6 +73,9 @@ struct ScanView: View {
                         onRetake: { showConfirm = false; phase = .idle; camera.capturedImage = nil }
                     )
                 }
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
             }
             // React as soon as the camera delivers the photo
             .onChange(of: camera.capturedImage) { _, newImage in
@@ -187,6 +192,10 @@ struct ScanView: View {
     // MARK: - Capture flow
 
     private func captureAndAnalyse() {
+        guard store.isPremium else {
+            showPaywall = true
+            return
+        }
         phase = .analysing
         camera.capturedImage = nil   // clear any previous capture
         camera.capturePhoto()
